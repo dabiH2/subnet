@@ -256,13 +256,7 @@ export default function RunAgentPage() {
 
             {hasParams && showPreview && (
               <div className="prose prose-sm text-foreground bg-muted/50 max-h-96 max-w-none overflow-y-auto rounded-md border p-3 text-xs">
-                <pre className="whitespace-pre-wrap">{effectivePrompt}</pre>
-              </div>
-            )}
-
-            {showPreview && (
-              <div className="prose prose-sm text-foreground bg-muted/50 max-h-96 max-w-none overflow-y-auto rounded-md border p-3 text-xs">
-                <pre className="whitespace-pre-wrap">{effectivePrompt}</pre>
+                <pre className="whitespace-pre-wrap"><ReactMarkdown>{effectivePrompt}</ReactMarkdown></pre>
               </div>
             )}
 
