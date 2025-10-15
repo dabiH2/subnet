@@ -86,7 +86,7 @@ export default async function ShareAgentPage({ params }: { params: Promise<{ slu
 
             <div className="mt-6">
               <h3 className="mb-2 font-semibold">Prompt (preview)</h3>
-              <pre className="bg-muted text-sm p-3 rounded-md whitespace-pre-wrap">{body}</pre>
+              <pre className="bg-muted text-sm p-3 rounded-md whitespace-pre-wrap"><ReactMarkdown>{body}</ReactMarkdown></pre>
             </div>
 
             <div className="mt-6 text-xs text-muted-foreground">
