@@ -104,9 +104,15 @@ export default function RunAgentPage() {
   }, [params.id, router]);
 
   // Strip VARS block for display and for preview base
-  const instructionBody = useMemo(
-    () => extractVarsAndBody(agent?.prompt ?? '').body,
+  const { vars, body: instructionBody } = useMemo(
+    () => extractVarsAndBody(agent?.prompt ?? ''),
     [agent?.prompt]
+  );
+
+  // true if the agent defines any parameters
+  const hasParams = useMemo(
+    () => !!(vars && Object.keys(vars).length > 0),
+    [vars]
   );
 
   // Build URL prefill object once
@@ -235,16 +241,24 @@ export default function RunAgentPage() {
                 </CollapsibleContent>
               </Collapsible>
 
-              <Button
-                variant={showPreview ? 'default' : 'outline'}
-                size="sm"
-                className="text-xs"
-                onClick={() => setShowPreview((s) => !s)}
-              >
-                <Eye className="mr-2 h-3 w-3" />
-                {showPreview ? 'Hide' : 'Preview'} Effective Prompt
-              </Button>
+              {hasParams && (
+                <Button
+                  variant={showPreview ? 'default' : 'outline'}
+                  size="sm"
+                  className="text-xs"
+                  onClick={() => setShowPreview((s) => !s)}
+                >
+                  <Eye className="mr-2 h-3 w-3" />
+                  {showPreview ? 'Hide' : 'Preview'} Effective Prompt
+                </Button>
+              )}
             </div>
+
+            {hasParams && showPreview && (
+              <div className="prose prose-sm text-foreground bg-muted/50 max-h-96 max-w-none overflow-y-auto rounded-md border p-3 text-xs">
+                <pre className="whitespace-pre-wrap">{effectivePrompt}</pre>
+              </div>
+            )}
 
             {showPreview && (
               <div className="prose prose-sm text-foreground bg-muted/50 max-h-96 max-w-none overflow-y-auto rounded-md border p-3 text-xs">
