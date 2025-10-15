@@ -15,6 +15,10 @@ import { Badge } from '@/components/ui/badge';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { AVAILABLE_TOOLS } from '@/lib/types';
+import { useRouter } from 'next/navigation';
+import { buildAgentSharePath } from '@/lib/slugify';
+
+
 
 interface AgentCardProps {
   agent: Agent;
@@ -23,6 +27,25 @@ interface AgentCardProps {
 
 export function AgentCard({ agent, onDelete }: AgentCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
+
+  const handleShare = async () => {
+    try {
+      const url =
+        typeof window !== 'undefined'
+          ? `${window.location.origin}${buildAgentSharePath(agent.id, agent.title)}`
+          : buildAgentSharePath(agent.id, agent.title);
+      await navigator.clipboard.writeText(url);
+      alert('Share link copied to clipboard!');
+    } catch {
+      alert('Could not copy link. Please copy it from the share page.');
+    }
+  };
+
+  const handleFork = () => {
+    router.push(`/create?from=${agent.id}`);
+  };
+
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -87,12 +110,18 @@ export function AgentCard({ agent, onDelete }: AgentCardProps) {
           </div>
         </div>
       </CardContent>
-      <CardFooter>
-        <Link href={`/run/${agent.id}`} className="w-full">
+      <CardFooter className="flex gap-2">
+        <Link href={`/run/${agent.id}`} className="flex-1">
           <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full">
             View Agent
           </Button>
         </Link>
+        <Button variant="secondary" onClick={handleFork}>
+          Fork
+        </Button>
+        <Button variant="outline" onClick={handleShare}>
+          Share
+        </Button>
       </CardFooter>
     </Card>
   );

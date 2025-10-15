@@ -14,6 +14,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   try {
     const { id } = await params;
     const agentId = parseInt(id);
+    const body = await request.json().catch(() => ({} as any));
+    const overridePrompt: string | undefined =
+      typeof body?.overridePrompt === 'string' ? body.overridePrompt : undefined;
+
 
     // Fetch the agent from the database
     const agent = await db.select().from(agentsTable).where(eq(agentsTable.id, agentId)).limit(1);
@@ -23,6 +27,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     const agentData = agent[0];
+
+    const promptToUse = overridePrompt ?? agentData.prompt;
 
     // Parse tools from the agent data
     const toolsArray = Array.isArray(agentData.tools) ? agentData.tools : [];
@@ -44,7 +50,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             messages: [
               {
                 role: 'user',
-                content: agentData.prompt,
+                content: promptToUse,
               },
             ],
             tools: tools.length > 0 ? tools : [],
